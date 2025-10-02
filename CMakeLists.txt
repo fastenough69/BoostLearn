@@ -9,7 +9,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(BOOST_INCLUDE_DIR "C:/local/boost_1_89_0")
 set(BOOST_LIB_DIR "C:/local/boost_1_89_0/lib")
 
-add_executable(${PROJECT_NAME} src/main.cpp)
+add_executable(${PROJECT_NAME} 
+                src/main.cpp)
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${BOOST_INCLUDE_DIR})
 target_link_directories(${PROJECT_NAME} PRIVATE ${BOOST_LIB_DIR})
