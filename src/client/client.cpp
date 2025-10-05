@@ -3,7 +3,7 @@
 #include <iostream>
 #include <string>
 #include <functional>
-#include <streambuf>
+#include <sstream>
 
 using namespace boost::asio;
 using namespace boost::asio::ip;
@@ -12,16 +12,31 @@ int main() {
     io_context service;
     tcp::resolver resolver(service);
 
-    tcp::resolver::results_type endpoints = resolver.resolve("localhost", "80");
+    tcp::resolver::results_type endpoints = resolver.resolve("127.0.0.1", "2020");
 
     std::cout << "Resolved addresses:" << std::endl;
-    for (const auto& result : endpoints)
+
+    for (const auto& res : endpoints)
     {
-        tcp::endpoint ep = result.endpoint();
-        std::cout << ep.address().to_string() << std::endl;
-        auto sock = std::make_shared<tcp::socket>(service);
-        sock->connect(ep);
-        std::cout << "Connected to server\n";
+        tcp::socket temp_sock(service);
+        connect(temp_sock, endpoints);
+        std::cout << "Connected!\n";
+
+        streambuf buff;
+        boost::system::error_code ec;
+        read(temp_sock, buff, ec);
+
+        if (ec && ec != error::eof)
+        {
+            std::cout << "Read error\n";
+        }
+        else 
+        {
+            std::ostringstream ss;
+            ss << &buff;
+            std::string mess = ss.str();
+            std::cout << "Recived message: " << mess << std::endl;
+        }
     }
     return 0;
 }
