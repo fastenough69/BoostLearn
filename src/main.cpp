@@ -30,7 +30,7 @@ static void handle_accept(socket_ptr sock, tcp::acceptor& ac, const boost::syste
 int main(int argc, char** argv)
 {	
 	io_context ser;
-	tcp::endpoint ep(tcp::v4(), 2020);
+	tcp::endpoint ep(ip::address_v4::any(), 2020);
 	tcp::acceptor ac(ser, ep);
 	socket_ptr sc_ptr = std::make_shared<tcp::socket>(ser);
 	ac.async_accept(*sc_ptr, std::bind(handle_accept, sc_ptr, std::ref(ac), std::placeholders::_1));
