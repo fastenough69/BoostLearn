@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 4.1 FATAL_ERROR)
 
-project(boostTrainingclient LANGUAGES CXX)
+project(boostTraining LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -10,8 +10,8 @@ set(BOOST_INCLUDE_DIR "C:/local/boost_1_89_0")
 set(BOOST_LIB_DIR "C:/local/boost_1_89_0/lib")
 
 add_executable(${PROJECT_NAME} 
-                src/client.cpp
-		src/client.hpp)
+                src/server.cpp
+		src/server.hpp)
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${BOOST_INCLUDE_DIR})
 target_link_directories(${PROJECT_NAME} PRIVATE ${BOOST_LIB_DIR})
