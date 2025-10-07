@@ -1,8 +1,7 @@
 #include "server.hpp"
 
-std::vector<socket_ptr> clients;
-
-BoostServer::BoostServer(std::shared_ptr<io_context> con, const int& port): context_ptr(con), port(port), ep_(ip::address_v4::any(), port), ac_(*(context_ptr.lock()), ep_)
+BoostServer::BoostServer(std::shared_ptr<io_context> con, const int& port): 
+	context_ptr(con), port(port), ep_(ip::address_v4::any(), port), ac_(*(context_ptr.lock()), ep_)
 {
 	sock_ptr = std::make_shared<tcp::socket>(*(context_ptr.lock()));
 }
@@ -34,11 +33,20 @@ void BoostServer::server_run() noexcept
 void handle_accept(socket_ptr sock, tcp::acceptor& ac, const boost::system::error_code& code)
 {
 	if (code) return;
-	clients.push_back(sock);
 	std::cout << "Sock is accepted\n";
+	boost::system::error_code ec;
+	auto client_ep = sock->remote_endpoint(ec);
+	if (!ec)
+	{
+		std::cout << "Client addr " << client_ep.address().to_string() << std::endl;
+	}
+	else
+	{
+		std::cerr << ec.message();
+	}
 	static const std::string msg("Privet boost!\n");
 	async_write(*sock, buffer(msg),
-		[sock](const boost::system::error_code& ec, std::size_t /*length*/)
+		[sock, &client_ep](const boost::system::error_code& ec, std::size_t /*length*/)
 		{
 			if (!ec) {
 				std::cout << "Message sent successfully\n";
@@ -47,8 +55,7 @@ void handle_accept(socket_ptr sock, tcp::acceptor& ac, const boost::system::erro
 				std::cout << "Send error: " << ec.message() << "\n";
 			}
 		});
-	//sock->close();
-	send_message(sock);
+	sock->close();
 	auto new_sock = std::make_shared<tcp::socket>(ac.get_executor());
 	ac.async_accept(*new_sock, std::bind(handle_accept, new_sock, std::ref(ac), std::placeholders::_1));
 }

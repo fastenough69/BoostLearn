@@ -13,7 +13,6 @@ using socket_ptr = std::shared_ptr<tcp::socket>;
 using func_hand = void(*)(socket_ptr sock, tcp::acceptor& ac, const boost::system::error_code& code);
 
 void handle_accept(socket_ptr sock, tcp::acceptor& ac, const boost::system::error_code& code);
-void send_message(socket_ptr sock);
 
 class BoostServer {
 	std::weak_ptr<io_context> context_ptr;
@@ -36,5 +35,4 @@ public:
 	void socket_accept(func_hand func);
 	inline bool is_acepted() const noexcept;
 	void server_run() noexcept;
-	
 };
