@@ -18,5 +18,5 @@ target_link_directories(${PROJECT_NAME} PRIVATE ${BOOST_LIB_DIR})
 
 # Используем упрощенные имена библиотек
 target_link_libraries(${PROJECT_NAME} PRIVATE 
-    C:/local/boost_1_89_0/lib32-msvc-14.1/libboost_filesystem-vc141-mt-sgd-x32-1_89.lib
+     C:/local/boost_1_89_0/lib64-msvc-14.1/libboost_filesystem-vc141-mt-sgd-x64-1_89.lib
 )
