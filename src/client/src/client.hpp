@@ -6,6 +6,7 @@
 #include <string>
 #include <functional>
 #include <sstream>
+#include <thread>
 
 using namespace boost::asio;
 using namespace boost::asio::ip;

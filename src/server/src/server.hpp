@@ -12,10 +12,6 @@ using namespace ip;
 using socket_ptr = std::shared_ptr<tcp::socket>;
 using func_hand = void(*)(socket_ptr sock, tcp::acceptor& ac, const boost::system::error_code& code);
 
-//void handle_accept(socket_ptr sock, tcp::acceptor& ac, const boost::system::error_code& code);
-
-//static std::set<socket_ptr> clients;
-
 class BoostServer {
 	std::weak_ptr<io_context> context_ptr;
 	int port;
@@ -23,7 +19,7 @@ class BoostServer {
 	tcp::acceptor ac_;
 	socket_ptr sock_ptr = nullptr;
 	bool accepted = false;
-	std::set<tcp::socket> clients;
+	std::set<socket_ptr> clients;
 
 	void swap(BoostServer copy) noexcept;
 
@@ -37,8 +33,7 @@ public:
 	BoostServer& operator=(BoostServer&& right) noexcept;
 	void socket_accept();
 	inline bool is_acepted() const noexcept;
-	void hendle_acepted();
 	void server_run() noexcept;
 	void start_reading(socket_ptr sock);
-	void broadcast(const std::string& mess) const;
+	void broadcast(const std::string& mess, socket_ptr reciver = nullptr);
 };
