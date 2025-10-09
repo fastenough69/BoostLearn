@@ -33,13 +33,13 @@ void BoostClientTcp::try_connect()
 
 void BoostClientTcp::read_message()
 {
-    auto mess = std::make_shared<std::vector<char>>(1024);
-    async_read(*sock_ptr, buffer(mess->data(), mess->size()),
+    auto mess = std::make_shared<std::string>();
+    sock_ptr->async_read_some(buffer(*mess),
         [this, mess](const boost::system::error_code& ec, std::size_t len)
         {
             if (!ec)
             {
-                std::cout << mess->data() << std::endl;
+                std::cout << "Message user: " << mess->substr(0, len - 1) << std::endl;
                 read_message();
             }
             else
@@ -82,7 +82,7 @@ void BoostClientTcp::send_message()
 
 int main() {
     auto con = std::make_shared<io_context>();
-    BoostClientTcp client(con, std::string("127.0.0.1"), std::string("2020"));
+    BoostClientTcp client(con, std::string("46.173.18.82"), std::string("2020"));
     con->run();
     return 0;
 }
