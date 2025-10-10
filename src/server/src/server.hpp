@@ -6,6 +6,7 @@
 #include <string>
 #include <functional>
 #include <set>
+#include <mutex>
 
 using namespace boost::asio;
 using namespace ip;
@@ -20,8 +21,13 @@ class BoostServer {
 	socket_ptr sock_ptr = nullptr;
 	bool accepted = false;
 	std::set<socket_ptr> clients;
+	std::mutex mut;
 
 	void swap(BoostServer copy) noexcept;
+	void socket_accept();
+	inline bool is_acepted() const noexcept;
+	void server_run() noexcept;
+	void start_reading(socket_ptr sock);
 
 public:
 	BoostServer() = default;
@@ -31,9 +37,5 @@ public:
 	BoostServer& operator=(const BoostServer& right) = delete;
 	BoostServer(BoostServer&& right) noexcept;
 	BoostServer& operator=(BoostServer&& right) noexcept;
-	void socket_accept();
-	inline bool is_acepted() const noexcept;
-	void server_run() noexcept;
-	void start_reading(socket_ptr sock);
 	void broadcast(const std::string& mess, socket_ptr reciver = nullptr);
 };

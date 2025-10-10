@@ -11,6 +11,10 @@ BoostServer::BoostServer(std::shared_ptr<io_context> con, const int& port):
 BoostServer::~BoostServer()
 {
 	sock_ptr->close();
+	for (auto& client : clients) 
+	{
+		client->close();
+	}
 }
 
 void BoostServer::socket_accept()
@@ -21,9 +25,12 @@ void BoostServer::socket_accept()
 		{
 			if (!ec)
 			{
+				{
+					std::lock_guard<std::mutex> lcg(mut);
+					clients.insert(new_sock);
+				}
 				std::cout << "New user join in chat\n";
-				clients.insert(new_sock);
-				broadcast(std::string("New user join in chat"), new_sock);
+				broadcast(std::string("New user join in chat\n"), new_sock);
 				start_reading(new_sock);
 			}
 			socket_accept();
@@ -33,6 +40,7 @@ void BoostServer::socket_accept()
 
 void BoostServer::broadcast(const std::string& mess, socket_ptr reciver)
 {
+	std::lock_guard lcg(mut);
 	auto msg = std::make_shared<std::string>(mess);
 	for (auto& client : clients)
 	{
@@ -80,8 +88,11 @@ void BoostServer::start_reading(socket_ptr sock)
 			}
 			else
 			{
-				sock->close();
-				clients.erase(sock);
+				{
+					std::lock_guard<std::mutex> lcg(mut);
+					sock->close();
+					clients.erase(sock);
+				}
 				broadcast("User leave this chat", sock);
 			}
 		});

@@ -35,10 +35,11 @@ class BoostClientTcp: public BoostClientAny {
 	tcp::resolver resolver_;
 	tcp::resolver::results_type endpoints_;
 	socket_ptr sock_ptr;
+	std::thread write_th;
 	bool accept = false;
 public:
 	BoostClientTcp(std::shared_ptr<io_context> con, const std::string& host, const std::string& port);
-	~BoostClientTcp() { sock_ptr->close(); }
+	~BoostClientTcp();
 	BoostClientTcp(const BoostClientTcp&) = delete;
 	BoostClientTcp& operator=(const BoostClientTcp&) = delete;
 	BoostClientTcp(BoostClientTcp&& right) noexcept;

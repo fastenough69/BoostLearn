@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 4.1 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.22 FATAL_ERROR)
 
 project(boostTraining LANGUAGES CXX)
 
@@ -11,12 +11,18 @@ set(BOOST_LIB_DIR "C:/local/boost_1_89_0/lib")
 
 add_executable(${PROJECT_NAME} 
                 src/server.cpp
-		src/server.hpp)
+		        src/server.hpp)
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${BOOST_INCLUDE_DIR})
 target_link_directories(${PROJECT_NAME} PRIVATE ${BOOST_LIB_DIR})
 
 # Используем упрощенные имена библиотек
-target_link_libraries(${PROJECT_NAME} PRIVATE 
-    C:/local/boost_1_89_0/lib64-msvc-14.1/libboost_filesystem-vc141-mt-sgd-x64-1_89.lib
-)
+if(WIN32)
+    target_link_libraries(${PROJECT_NAME} PRIVATE 
+        "C:/local/boost_1_89_0/lib64-msvc-14.1/libboost_filesystem-vc141-mt-sgd-x64-1_89.lib"
+    )
+else()
+    target_link_libraries(${PROJECT_NAME} PRIVATE 
+        /usr/lib/x86_64-linux-gnu/libboost_system.so
+    )
+endif()

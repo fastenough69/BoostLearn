@@ -11,6 +11,12 @@ BoostClientTcp::BoostClientTcp(std::shared_ptr<io_context> con, const std::strin
     try_connect();
 }
 
+BoostClientTcp::~BoostClientTcp()
+{
+    sock_ptr->close();
+    if (write_th.joinable()) write_th.join();
+}
+
 void BoostClientTcp::try_connect()
 {
     async_connect(*sock_ptr, endpoints_, 
@@ -20,8 +26,8 @@ void BoostClientTcp::try_connect()
             {
                 std::cout << "Connected\n";
                 this->accept = true;
-                this->send_message();
-                std::thread([this]() {  this->read_message(); }).detach();
+                write_th = std::thread([this]() { this->send_message(); });
+                this->read_message();
             }
             else
             {
@@ -34,7 +40,7 @@ void BoostClientTcp::try_connect()
 void BoostClientTcp::read_message()
 {
     auto mess = std::make_shared<std::string>();
-    sock_ptr->async_read_some(buffer(*mess),
+    async_read_until(*sock_ptr, dynamic_buffer(*mess), '\n',
         [this, mess](const boost::system::error_code& ec, std::size_t len)
         {
             if (!ec)
